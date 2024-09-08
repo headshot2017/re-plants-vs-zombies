@@ -3108,49 +3108,6 @@ void Challenge::DrawRain(Graphics* g)
             TodDrawImageScaledF(g, Sexy::IMAGE_RAIN, aImageClsX, aImageClsY, aRainScaleCls, aRainScaleCls);
         }
     }
-}void Challenge::DrawRain(Graphics* g)
-{
-    if (mBoard->mCutScene->IsBeforePreloading() || !mApp->Is3DAccelerated())
-        return;
-
-    int aBoardOffsetX;
-    if (aBoardOffsetX > 0)
-    {
-        aBoardOffsetX = (mBoard->mX + 100) / 100 * -100;
-    }
-    else
-    {
-        aBoardOffsetX = mBoard->mX / 100 * -100;
-    }
-
-    int aTime = mBoard->mEffectCounter % 100;
-    int aTimeOffsetXEst = TodAnimateCurve(0, 100, aTime, 0, -100, CURVE_LINEAR);
-    int aTimeOffsetYEst = TodAnimateCurve(0, 20, aTime % 20, -100, 0, CURVE_LINEAR);
-    // 绘制远景的雨
-    for (int aHorCnt = 9; aHorCnt > 0; aHorCnt--)
-    {
-        for (int aVerCnt = 7; aVerCnt > 0; aVerCnt--)
-        {
-            int aImageX = aHorCnt * 100 + aTimeOffsetXEst + aBoardOffsetX;
-            int aImageY = aVerCnt * 100 + aTimeOffsetYEst;
-            g->DrawImage(Sexy::IMAGE_RAIN, aImageX, aImageY);
-        }
-    }
-
-    aTime = mBoard->mEffectCounter;
-    float aTimeOffsetXCls = TodAnimateCurve(0, 161, aTime % 161, 0, -100, CURVE_LINEAR);
-    float aTimeOffsetYCls = TodAnimateCurve(0, 33, aTime % 33, -100, 0, CURVE_LINEAR);
-    // 绘制近景的雨
-    for (int aHorCnt = 0; aHorCnt < 9; aHorCnt++)
-    {
-        for (int aVerCnt = 0; aVerCnt < 7; aVerCnt++)
-        {
-            float aRainScaleCls = 1.5f;
-            float aImageClsX = (aHorCnt * 100 + aTimeOffsetXCls) * aRainScaleCls + aBoardOffsetX;
-            float aImageClsY = (aVerCnt * 100 + aTimeOffsetYCls) * aRainScaleCls;
-            TodDrawImageScaledF(g, Sexy::IMAGE_RAIN, aImageClsX, aImageClsY, aRainScaleCls, aRainScaleCls);
-        }
-    }
 }
 
 //0x426E90
