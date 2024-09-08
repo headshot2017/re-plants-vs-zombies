@@ -1273,7 +1273,7 @@ void LawnApp::Init()
 	TodLog("session id: %u", mSessionID);
 //#endif
 
-	if (!mResourceManager->ParseResourcesFile("properties/resources.xml"))
+	if (!mResourceManager->ParseResourcesFile(/*mChangeDirTo + */"properties/resources.xml"))
 	{
 		ShowResourceError(true);
 		return;
