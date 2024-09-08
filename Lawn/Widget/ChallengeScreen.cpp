@@ -450,25 +450,25 @@ void ChallengeScreen::DrawButton(Graphics* g, int theChallengeIndex)
 			{
 				// 先尝试在名称字符串的后半段取空格以将字符串分隔为两行，若后半段中无空格则在整个字符串中寻找空格
 				int aHalfPos = (mPageIndex == CHALLENGE_PAGE_SURVIVAL && !aChallengeButton->mDisabled) ? 7 : (aNameLen / 2 - 1);
-				const SexyChar* aSpacedChar = _S(aName.c_str() + aHalfPos, _S(' '));
+				const SexyChar* aSpacedChar = __S(aName.c_str() + aHalfPos, __S(' '));
 				while(aSpacedChar[0]!=' ')
 				{
 					aHalfPos++;
-					aSpacedChar = _S(aName.c_str() + aHalfPos, _S(' '));
+					aSpacedChar = __S(aName.c_str() + aHalfPos, __S(' '));
 					if(aSpacedChar[0]=='\0')
 					{
 						aHalfPos--;
-						aSpacedChar = _S(aName.c_str() + aHalfPos, _S(' '));
+						aSpacedChar = __S(aName.c_str() + aHalfPos, __S(' '));
 						break;
 					}
 				}
 				aHalfPos--;
-				aSpacedChar = _S(aName.c_str() + aHalfPos, _S(' '));
+				aSpacedChar = __S(aName.c_str() + aHalfPos, __S(' '));
 
 				
 				if (aSpacedChar == nullptr)
 				{
-					aSpacedChar = _S(aName.c_str(), _S(' '));
+					aSpacedChar = __S(aName.c_str(), __S(' '));
 				}
 
 				// 分别计算取得两行文本的长度
