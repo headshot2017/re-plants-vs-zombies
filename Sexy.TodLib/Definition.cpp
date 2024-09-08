@@ -541,6 +541,7 @@ uint DefinitionCalcHash(DefMap* theDefMap)
 //0x444500 : UnCompress(&theUncompressedSize, theCompressedBufferSize, esi = *theCompressedBuffer)
 void* DefinitionUncompressCompiledBuffer(void* theCompressedBuffer, size_t theCompressedBufferSize, size_t& theUncompressedSize, const SexyString& theCompiledFilePath)
 {
+    auto sz=theCompressedBufferSize;
     // theCompressedBuffer 的前两个四字节存有特殊数据，此处检测其长度是否足够 8 字节（即 2 个四字节）
     if (theCompressedBufferSize < 8)
     {
@@ -554,15 +555,12 @@ void* DefinitionUncompressCompiledBuffer(void* theCompressedBuffer, size_t theCo
         TodTrace("Compiled fire cookie wrong: %s\n", theCompiledFilePath.c_str());
         return nullptr;
     }
-    
     Bytef* aUncompressedBuffer = (Bytef*)DefinitionAlloc(aHeader->mUncompressedSize);
-    Bytef* aSrc = (Bytef*)((intptr_t)theCompressedBuffer + sizeof(CompressedDefinitionHeader));  // 实际解压数据从第 3 个四字节开始
-    // BuGFIXX!!
-    ulong aUncompressedSizeResult = aHeader->mUncompressedSize;  // 用作出参的未压缩数据实际长度
-    int aResult = uncompress(aUncompressedBuffer, &aUncompressedSizeResult, aSrc, theCompressedBufferSize - sizeof(CompressedDefinitionHeader));
-    (void)aResult; // Compiler can't work out that this is used in the Debug build
+    theCompressedBufferSize=aHeader->mUncompressedSize; //my addition
+    Bytef* aSrc = (Bytef*)((int)theCompressedBuffer + sizeof(CompressedDefinitionHeader));  // 实际解压数据从第 3 个四字节开始
+    int aResult = uncompress(aUncompressedBuffer, (uLongf*)&theCompressedBufferSize, aSrc, sz - sizeof(CompressedDefinitionHeader));
     TOD_ASSERT(aResult == Z_OK);
-    TOD_ASSERT(aUncompressedSizeResult == aHeader->mUncompressedSize);
+    TOD_ASSERT(theCompressedBufferSize == aHeader->mUncompressedSize);
     theUncompressedSize = aHeader->mUncompressedSize;
     return aUncompressedBuffer;
 }
@@ -1214,27 +1212,36 @@ void DefWriteToCacheFloatTrack(void*& theWritePtr, FloatParameterTrack* theValue
         SMemW(theWritePtr, theValue->mNodes, theValue->mCountNodes * sizeof(FloatParameterTrackNode));
 }
 
-void DefWriteToCacheImage(void*& theWritePtr, Image** theValue) {
-    std::string aImageName{};
-    if (*theValue)
-        TodFindImagePath(*theValue, &aImageName);
+bool DefReadFromCacheImage(void *&theReadPtr, Image **theImage) 
+{
+    int aLen;
+    SMemR(theReadPtr, &aLen, sizeof(int));
+    TOD_ASSERT(aLen >= 0 && aLen <= 100000);
+    auto aImageName = (char *)alloca(aLen + 1);
+    if (aImageName == nullptr) return false;
 
-    unsigned int aImageSize = aImageName.length();
-    SMemW(theWritePtr, &aImageSize, sizeof(unsigned int));
-    if (aImageSize > 0)
-        SMemW(theWritePtr, aImageName.c_str(), aImageSize);
+    SMemR(theReadPtr, aImageName, aLen);
+    aImageName[aLen] = '\0';
+
+    *theImage = nullptr;
+    auto result = aImageName[0] == '\0' || DefinitionLoadImage(theImage, aImageName);
+    return result;
 }
 
-void DefWriteToCacheFont(void*& theWritePtr, _Font** theValue) {
-    std::string aFontName{};
-    if (*theValue) {
-        TodFindFontPath(*theValue, &aFontName);
-    }
+bool DefReadFromCacheFont(void *&theReadPtr, _Font **theFont) 
+{
+    int aLen;
+    SMemR(theReadPtr, &aLen, sizeof(int));
+    TOD_ASSERT(aLen >= 0 && aLen <= 100000);
+    auto aFontName = (char *)alloca(aLen + 1);
+    if (aFontName == nullptr) return false;
 
-    unsigned int aFontSize = aFontName.length();
-    SMemW(theWritePtr, &aFontSize, sizeof(unsigned int));
-    if (aFontSize > 0)
-        SMemW(theWritePtr, aFontName.c_str(), aFontSize);
+    SMemR(theReadPtr, aFontName, aLen);
+    aFontName[aLen] = '\0';
+
+    *theFont = nullptr;
+    auto result = aFontName[0] == '\0' || DefinitionLoadFont(theFont, aFontName);
+    return result;
 }
 
 void DefMapWriteToCache(void*& theWritePtr, DefMap* theDefMap, void* theDefinition) {

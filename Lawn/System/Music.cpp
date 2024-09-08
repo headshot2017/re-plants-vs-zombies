@@ -175,31 +175,26 @@ void Music::MusicTitleScreenInit()
 //0x45A980
 void Music::MusicInit()
 {
-#ifdef _DEBUG
 	int aNumLoadingTasks = mApp->mCompletedLoadingThreadTasks + GetNumLoadingTasks();
-#endif
 
 	LoadSong(MusicFile::MUSIC_FILE_DRUMS, "sounds/mainmusic.mo3");
 	mApp->mCompletedLoadingThreadTasks += /*原版*/3500;///*内测版*/800;
 	LoadSong(MusicFile::MUSIC_FILE_HIHATS, "sounds/mainmusic_hihats.mo3");
 	mApp->mCompletedLoadingThreadTasks += /*原版*/3500;///*内测版*/800;
 
-#ifdef _DEBUG
+
 	LoadSong(MusicFile::MUSIC_FILE_CREDITS_ZOMBIES_ON_YOUR_LAWN, "sounds/ZombiesOnYourLawn.ogg");
 	mApp->mCompletedLoadingThreadTasks += /*原版*/3500;///*内测版*/800;
 	if (mApp->mCompletedLoadingThreadTasks != aNumLoadingTasks)
 		TodTrace("Didn't calculate loading task count correctly!!!!");
-#endif
 }
 
 //0x45AAC0
 void Music::MusicCreditScreenInit()
 {
-#ifndef _DEBUG
 	SDLMusicInterface* anSDL = (SDLMusicInterface*)mApp->mMusicInterface;
 	if (anSDL->mMusicMap.find((int)MusicFile::MUSIC_FILE_CREDITS_ZOMBIES_ON_YOUR_LAWN) == anSDL->mMusicMap.end())  // 如果尚未加载
 		LoadSong(MusicFile::MUSIC_FILE_MAIN_MUSIC, "sounds/ZombiesOnYourLawn.ogg");
-#endif
 }
 
 //0x45ABB0
@@ -441,7 +436,7 @@ void Music::PlayMusic(MusicTune theMusicTune, int theOffset, int theDrumsOffset)
 	}
 }
 
-unsigned long Music::GetMusicOrder(MusicFile theMusicFile)
+unsigned long Music::GetMusicOrder(const MusicFile theMusicFile)
 {
 	TOD_ASSERT(theMusicFile != MusicFile::MUSIC_FILE_NONE);
 	return ((SDLMusicInterface*)mApp->mMusicInterface)->GetMusicOrder((int)theMusicFile);

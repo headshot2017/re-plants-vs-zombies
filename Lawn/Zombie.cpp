@@ -702,7 +702,7 @@ void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Z
         aBodyReanim->mFrameBasePose = 0;
         TodScaleRotateTransformMatrix(aAttachEffect->mOffset, 37.0f, 0.0f, 0.2f, -0.8f, 0.8f);
 
-        mHelmType = HelmType::HELMTYPE_WALLNUT;
+        mHelmType = HelmType::HELMTYPE_TALLNUT;
         mHelmHealth = 2200;
         mVariant = false;
         mPosX += 30.0f;
@@ -2405,6 +2405,7 @@ void Zombie::UpdateZombieJalapenoHead()
                 aPlant->Die();
             }
         }
+        mDead = true;
 #endif
     }
 }
@@ -3215,7 +3216,7 @@ void Zombie::UpdateZombiquarium()
             mVelZ = 0.0f;
         }
 
-        if (mPosX > 550.0f || aVelX > 0.0f)
+        if (mPosX > 550.0f && aVelX > 0.0f)
         {
             mVelZ = PI;
         }
@@ -3873,7 +3874,7 @@ float Zombie::ZombieTargetLeadX(float theTime)
     }
 
     Rect aZombieRect = GetZombieRect();
-    float aCurrentPosX = aZombieRect.mX + aZombieRect.mWidth / 2;
+    float aCurrentPosX = aZombieRect.mX + aZombieRect.mWidth / 2.0;
     float aDisplacementX = aSpeed * theTime;
     return aCurrentPosX - aDisplacementX;
 }
@@ -4720,48 +4721,29 @@ void Zombie::UpdateYuckyFace()
     {
         StartWalkAnim(20);
 
-        bool aCanGoUp = true;
-        bool aCanGoDown = true;
-        bool aIsPool = mBoard->mPlantRow[mRow] == PlantRowType::PLANTROW_POOL;
-        if (!mBoard->RowCanHaveZombies(mRow - 1))
-        {
+        bool aCanGoUp = mBoard->RowCanHaveZombies(mRow - 1);
+        bool aCanGoDown = mBoard->RowCanHaveZombies(mRow + 1);
+        bool aIsPool = mBoard->mBoardData.mPlantRow[mRow] == PlantRowType::PLANTROW_POOL;
+
+        if (mBoard->mBoardData.mPlantRow[mRow - 1] == PlantRowType::PLANTROW_POOL && !aIsPool) {
+            aCanGoUp = false;
+        } else if (mBoard->mBoardData.mPlantRow[mRow - 1] != PlantRowType::PLANTROW_POOL && aIsPool) {
             aCanGoUp = false;
         }
-        else if (mBoard->mPlantRow[mRow - 1] == PlantRowType::PLANTROW_POOL && !aIsPool)
-        {
-            aCanGoUp = false;
-        }
-        else if (mBoard->mPlantRow[mRow - 1] != PlantRowType::PLANTROW_POOL && aIsPool)
-        {
-            aCanGoUp = false;
-        }
-        if (!mBoard->RowCanHaveZombies(mRow + 1))
-        {
+
+        if (mBoard->mBoardData.mPlantRow[mRow + 1] == PlantRowType::PLANTROW_POOL && !aIsPool) {
             aCanGoDown = false;
-        }
-        else if (mBoard->mPlantRow[mRow + 1] == PlantRowType::PLANTROW_POOL && !aIsPool)
-        {
-            aCanGoDown = false;
-        }
-        else if (mBoard->mPlantRow[mRow + 1] != PlantRowType::PLANTROW_POOL && aIsPool)
-        {
+        } else if (mBoard->mBoardData.mPlantRow[mRow + 1] != PlantRowType::PLANTROW_POOL && aIsPool) {
             aCanGoDown = false;
         }
 
-        if (aCanGoDown && !aCanGoUp)
-        {
-            SetRow(mRow - 1);
-        }
-        else if (!aCanGoDown && aCanGoUp)
-        {
+        if (aCanGoDown && !aCanGoUp) {
             SetRow(mRow + 1);
-        }
-        else if (aCanGoDown && aCanGoUp)
-        {
+        } else if (!aCanGoDown && aCanGoUp) {
+            SetRow(mRow - 1);
+        } else if (aCanGoDown && aCanGoUp) {
             SetRow((Rand(2) == 0) ? (mRow + 1) : (mRow - 1));
-        }
-        else
-        {
+        } else {
             TOD_ASSERT();
         }
     }
@@ -5504,8 +5486,9 @@ void Zombie::DrawBungeeReanim(Graphics* g)
     DrawBungeeCord(g, -22);
     aBodyReanim->Draw(g);
 
-    Zombie* aDroppedZombie = mBoard->ZombieTryToGet(mRelatedZombieID);
-    if (aDroppedZombie)
+    Zombie *aDroppedZombie;
+    if (!mBoard) goto drawBungee;
+    aDroppedZombie = mBoard->ZombieTryToGet(mRelatedZombieID);    if (aDroppedZombie)
     {
         Graphics aDropGraphics(*g);
         aDropGraphics.mTransY -= mAltitude;
@@ -5539,6 +5522,7 @@ void Zombie::DrawBungeeReanim(Graphics* g)
         }
     }
 
+drawBungee:
     aBodyReanim->DrawRenderGroup(g, RENDER_GROUP_ARMS);
 }
 
@@ -7403,16 +7387,13 @@ void Zombie::BungeeDropPlant()
 //0x530480
 void Zombie::BungeeDie()
 {
-    BungeeDropPlant();
+    if (!mBoard) return;
 
-    if (mBoard)  // 原版没有这个判断，因为 mBoard 为空时 DataArrayTryToGet() 不会实际用到 mBoard，此处为了确保安全就加上了这个判断
-    {
-        Plant* aPlant = mBoard->mPlants.DataArrayTryToGet((unsigned int)mTargetPlantID);
-        if (aPlant)
-        {
-            mBoard->mPlantsEaten++;
-            aPlant->Die();
-        }
+    BungeeDropPlant();
+    Plant *aPlant = mBoard->mPlants.DataArrayTryToGet((unsigned int)mTargetPlantID);
+    if (aPlant) {
+        mBoard->mBoardData.mPlantsEaten++;
+        aPlant->Die();
     }
 
     Zombie* aZombie = mBoard->ZombieTryToGet(mRelatedZombieID);
@@ -9420,6 +9401,9 @@ void Zombie::DrawShadow(Graphics* g)
     if (mApp->mGameScene == GameScenes::SCENE_ZOMBIES_WON && !SetupDrawZombieWon(g))
         return;
 
+    if (mApp->mGameMode == GAMEMODE_CHALLENGE_ZOMBIQUARIUM) 
+        return;
+
     int aShadowType = 0;
     float aShadowOffsetX = aDrawPos.mImageOffsetX;
     float aShadowOffsetY = aDrawPos.mImageOffsetY + aDrawPos.mBodyY;
@@ -9912,7 +9896,7 @@ void Zombie::BossSpawnContact()
             aZombieTypeCount--;
         }
 
-        aZombieType = (ZombieType)TodPickFromArray((intptr_t*)gBossZombieList, aZombieTypeCount);
+         aZombieType = TodPickFromArray(gBossZombieList, aZombieTypeCount);
     }
 
     Zombie* aZombie = mBoard->AddZombieInRow(aZombieType, mTargetRow, 0);
@@ -10716,16 +10700,20 @@ void Zombie::EnableMustache(bool theEnableMustache)
     if (aBodyReanim == nullptr || !aBodyReanim->TrackExists("Zombie_mustache"))
         return;
 
+
     if (theEnableMustache)
     {
         aBodyReanim->AssignRenderGroupToPrefix("Zombie_mustache", RENDER_GROUP_NORMAL);
 
+        Image *aImage = nullptr;
         switch (RandRangeInt(1, 3))
         {
-        case 1:     aBodyReanim->SetImageOverride("Zombie_mustache", nullptr);                          break;
-        case 2:     aBodyReanim->SetImageOverride("Zombie_mustache", IMAGE_REANIM_ZOMBIE_MUSTACHE2);    break;
-        case 3:     aBodyReanim->SetImageOverride("Zombie_mustache", IMAGE_REANIM_ZOMBIE_MUSTACHE3);    break;
+        case 1:  break;
+        case 2:  aImage = IMAGE_REANIM_ZOMBIE_MUSTACHE2; break;
+        case 3:  aImage = IMAGE_REANIM_ZOMBIE_MUSTACHE3; break;
+        default: TOD_ASSERT(); break;
         }
+        aBodyReanim->SetImageOverride("Zombie_mustache", aImage);
     }
     else
     {

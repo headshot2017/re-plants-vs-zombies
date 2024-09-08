@@ -1000,6 +1000,8 @@ void CreditScreen::Draw(Graphics* g)
 
 Reanimation* CreditScreen::FindSubReanim(Reanimation* theReanim, ReanimationType theReanimType)
 {
+    if (theReanim->mDefinition == 0)
+        return nullptr; 
     if (theReanim->mReanimationType == theReanimType)
         return theReanim;
 
@@ -1427,6 +1429,8 @@ void CreditScreen::UpdateMovie()
 //0x437F20
 void CreditScreen::TurnOffTongues(Reanimation* theReanim, int aParentTrack)
 {
+    if (theReanim->mDefinition == 0)
+        return nullptr; 
     for (int aTrackIndex = 0; aTrackIndex < theReanim->mDefinition->mTracks.count; aTrackIndex++)
     {
         ReanimatorTrackInstance* aTrackInstance = &theReanim->mTrackInstances[aTrackIndex];

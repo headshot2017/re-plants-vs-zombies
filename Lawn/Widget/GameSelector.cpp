@@ -833,11 +833,11 @@ void GameSelector::Update()
 				mApp->PreNewGame(GameMode::GAMEMODE_CHALLENGE_ICE, false);
 				return;
 			}
-			if (mApp->IsFirstTimeAdventureMode() && mLevel == 1 && !mApp->SaveFileExists())
+            if (mApp->IsFirstTimeAdventureMode() && mLevel == 1 && !mApp->SaveFileExists()) 
 			{
-				mApp->PreNewGame(GameMode::GAMEMODE_INTRO, false);
-				return;
-			}
+                mApp->PreNewGame(GameMode::GAMEMODE_INTRO, false);
+                return;
+            }
 			if (mApp->mPlayerInfo->mNeedsMagicTacoReward && mLevel == 35)
 			{
 				StoreScreen* aStore = mApp->ShowStoreScreen();

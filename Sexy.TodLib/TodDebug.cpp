@@ -20,6 +20,7 @@ static char gDebugDataFolder[512];
 //0x514EA0
 void TodErrorMessageBox(const char* theMessage, const char* theTitle)
 {
+
 #ifdef __SWITCH__
 	ErrorApplicationConfig c;
 	errorApplicationCreate(&c, theTitle, theMessage);
@@ -27,6 +28,21 @@ void TodErrorMessageBox(const char* theMessage, const char* theTitle)
 #else
 	throw std::runtime_error("Error Box\n--" + std::string(theTitle) + "--\n" + theMessage);
 #endif
+
+	//probably will break
+	FILE* f = fopen(GetAppDataFolder() + "userdata/error.txt", "a");
+	if (f == nullptr)
+	{
+		TodLog(theMessage, __S("Failed to open log file '%s'\n"), GetAppDataFolder() + "userdata/error.txt");
+		return;
+	}
+
+	if (fwrite(theMsg, strlen(theMsg), 1, f) != 1)
+	{
+		TodLog(stderr, __S("Failed to write to log file\n"));
+	}
+
+	fclose(f);
 }
 
 void TodTraceMemory()

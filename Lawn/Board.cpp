@@ -1587,6 +1587,10 @@ void Board::InitLevel()
 		mSeedBank->mSeedPackets[1].SetPacketType(SeedType::SEED_GRAVEBUSTER);
 		mSeedBank->mSeedPackets[2].SetPacketType(mApp->IsAdventureMode() ? SeedType::SEED_CHERRYBOMB : SeedType::SEED_ICESHROOM);
 	}
+	} else if (aGameMode == GameMode::GAMEMODE_CHALLENGE_ZOMBIQUARIUM) {
+        mSeedBank->mSeedPackets[0].SetPacketType(SeedType::SEED_ZOMBIQUARIUM_SNORKLE);
+        mSeedBank->mSeedPackets[1].SetPacketType(SeedType::SEED_ZOMBIQUARIUM_TROPHY);
+	}
 	else if (!ChooseSeedsOnCurrentLevel() && !HasConveyorBeltSeedBank())
 	{
 		mSeedBank->mNumPackets = GetNumSeedsInBank();
@@ -3368,6 +3372,8 @@ void Board::UpdateToolTip()
 		mToolTip->mVisible = false;
 		return;
 	}
+
+	if (mWidgetManager == nullptr) return;	
 
 	int aMouseX = mApp->mWidgetManager->mLastMouseX - mX;
 	int aMouseY = mApp->mWidgetManager->mLastMouseY - mY;
@@ -5718,7 +5724,7 @@ void Board::UpdateTutorial()
 	if (mTutorialState == TutorialState::TUTORIAL_LEVEL_1_PICK_UP_PEASHOOTER && mTutorialTimer == 0)
 	{
 		DisplayAdvice(__S("[ADVICE_CLICK_PEASHOOTER]"), MessageStyle::MESSAGE_STYLE_TUTORIAL_LEVEL1_STAY, AdviceType::ADVICE_NONE);
-		TutorialArrowShow(mSeedBank->mX + mSeedBank->mSeedPackets[1].mX, mSeedBank->mY + mSeedBank->mSeedPackets[1].mY);
+		TutorialArrowShow(mSeedBank->mX + mSeedBank->mSeedPackets[0].mX, mSeedBank->mY + mSeedBank->mSeedPackets[0].mY);
 		mTutorialTimer = -1;
 	}
 	else if (mTutorialState == TutorialState::TUTORIAL_LEVEL_2_PICK_UP_SUNFLOWER || 
@@ -5804,7 +5810,7 @@ void Board::SetTutorialState(TutorialState theTutorialState)
 
 	case TutorialState::TUTORIAL_LEVEL_2_PICK_UP_SUNFLOWER:
 	case TutorialState::TUTORIAL_MORESUN_PICK_UP_SUNFLOWER:
-		TutorialArrowShow(mSeedBank->mX + mSeedBank->mSeedPackets[1].mX, mSeedBank->mX + mSeedBank->mSeedPackets[1].mX);
+		TutorialArrowShow(mSeedBank->mX + mSeedBank->mSeedPackets[1].mX, mSeedBank->mX + mSeedBank->mSeedPackets[1].mY);
 		break;
 
 	case TutorialState::TUTORIAL_LEVEL_2_PLANT_SUNFLOWER:
@@ -7462,7 +7468,10 @@ void Board::DrawUIBottom(Graphics* g)
 		g->DrawImageCel(Sexy::IMAGE_WAVECENTER, 160, 40, aWaveTime);
 		g->DrawImageCel(Sexy::IMAGE_WAVECENTER, 320, 40, aWaveTime);
 		g->DrawImageCel(Sexy::IMAGE_WAVECENTER, 480, 40, aWaveTime);
-		TodDrawImageCelScaled(g, Sexy::IMAGE_WAVESIDE, 800, 40, 0, aWaveTime, -1.0f, 1.0f);
+ 		TodDrawImageCelScaledF(
+            g, Sexy::IMAGE_WAVESIDE, 800, 40, aWaveTime % Sexy::IMAGE_WAVESIDE->mNumCols,
+            aWaveTime / Sexy::IMAGE_WAVESIDE->mNumCols, -1.0f, 1.0f
+        );
 		g->SetDrawMode(Graphics::DRAWMODE_NORMAL);
 	}
 

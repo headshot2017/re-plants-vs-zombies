@@ -188,7 +188,6 @@ void GridItem::DrawStinky(Graphics* g)
     Reanimation* aStinkyReanim = mApp->ReanimationGet(mGridItemReanimID);
     float aOriginalTime = aStinkyReanim->mAnimTime;
 
-    TOD_ASSERT(mMotionTrailCount <= NUM_MOTION_TRAIL_FRAMES);
     for (int i = mMotionTrailCount - 1; i >= 0; i--)
     {
         if (i % 2)
@@ -476,7 +475,7 @@ void GridItem::ClosePortal()
     Reanimation* aPortalReanim = mApp->ReanimationTryToGet(mGridItemReanimID);
     if (aPortalReanim)
     {
-        aPortalReanim->PlayReanim("anim_disappear", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 12.0f);
+        aPortalReanim->PlayReanim("anim_dissapear", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 12.0f);
     }
 
     TodParticleSystem* aPortalParticle = mApp->ParticleTryToGet(mGridItemParticleID);

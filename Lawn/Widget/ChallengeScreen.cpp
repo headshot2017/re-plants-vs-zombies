@@ -438,7 +438,7 @@ void ChallengeScreen::DrawButton(Graphics* g, int theChallengeIndex)
 			SexyString aName = TodStringTranslate(aDef.mChallengeName);
 			if (aChallengeButton->mDisabled || (theChallengeIndex == mUnlockChallengeIndex && mUnlockState == UNLOCK_SHAKING))
 			{
-				aName = __S("?");
+				aName = _S("?");
 			}
 
 			int aNameLen = aName.size();
@@ -450,10 +450,25 @@ void ChallengeScreen::DrawButton(Graphics* g, int theChallengeIndex)
 			{
 				// 先尝试在名称字符串的后半段取空格以将字符串分隔为两行，若后半段中无空格则在整个字符串中寻找空格
 				int aHalfPos = (mPageIndex == CHALLENGE_PAGE_SURVIVAL && !aChallengeButton->mDisabled) ? 7 : (aNameLen / 2 - 1);
-				const SexyChar* aSpacedChar = sexystrchr(aName.c_str() + aHalfPos, __S(' '));
+				const SexyChar* aSpacedChar = _S(aName.c_str() + aHalfPos, _S(' '));
+				while(aSpacedChar[0]!=' ')
+				{
+					aHalfPos++;
+					aSpacedChar = _S(aName.c_str() + aHalfPos, _S(' '));
+					if(aSpacedChar[0]=='\0')
+					{
+						aHalfPos--;
+						aSpacedChar = _S(aName.c_str() + aHalfPos, _S(' '));
+						break;
+					}
+				}
+				aHalfPos--;
+				aSpacedChar = _S(aName.c_str() + aHalfPos, _S(' '));
+
+				
 				if (aSpacedChar == nullptr)
 				{
-					aSpacedChar = sexystrchr(aName.c_str(), __S(' '));
+					aSpacedChar = _S(aName.c_str(), _S(' '));
 				}
 
 				// 分别计算取得两行文本的长度
@@ -464,13 +479,23 @@ void ChallengeScreen::DrawButton(Graphics* g, int theChallengeIndex)
 					aLine1Len = aSpacedChar - aName.c_str();
 					aLine2Len = aNameLen - aLine1Len - 1;
 				}
-
+				
 				// 分别绘制两行文本字符串
-				TodDrawString(g, aName.substr(0, aLine1Len), aPosX + 52, aPosY + 88, Sexy::FONT_BRIANNETOD12, aTextColor, DS_ALIGN_CENTER);
-				if (aLine2Len > 0)
+				auto topStr=aName.substr(0, aLine1Len+1);
+				auto botStr=aName.substr(aLine1Len + 1, aLine2Len);
+				if(botStr.empty())
 				{
-					TodDrawString(g, aName.substr(aLine1Len + 1, aLine2Len), aPosX + 52, aPosY + 102, Sexy::FONT_BRIANNETOD12, aTextColor, DS_ALIGN_CENTER);
+					TodDrawString(g, aName, aPosX + 52, aPosY + 96, Sexy::FONT_BRIANNETOD12, aTextColor, DS_ALIGN_CENTER);
 				}
+				else
+				{
+					TodDrawString(g, topStr, aPosX + 52, aPosY + 88, Sexy::FONT_BRIANNETOD12, aTextColor, DS_ALIGN_CENTER);
+					if (aLine2Len > 0)
+					{
+						TodDrawString(g, botStr, aPosX + 52, aPosY + 102, Sexy::FONT_BRIANNETOD12, aTextColor, DS_ALIGN_CENTER);
+					}
+				}
+			
 			}
 
 			// ============================================================================================
@@ -497,13 +522,13 @@ void ChallengeScreen::DrawButton(Graphics* g, int theChallengeIndex)
 				}
 				else if (mApp->IsEndlessScaryPotter(aDef.mChallengeMode) || mApp->IsEndlessIZombie(aDef.mChallengeMode))
 				{
-					SexyString aAchievement = mApp->Pluralize(aRecord, __S("[ONE_FLAG]"), __S("[COUNT_FLAGS]"));
+					SexyString aAchievement = mApp->Pluralize(aRecord, _S("[ONE_FLAG]"), _S("[COUNT_FLAGS]"));
 					TodDrawString(g, aAchievement, aPosX + 48, aPosY + 48, Sexy::FONT_CONTINUUMBOLD14OUTLINE, Color::White, DS_ALIGN_CENTER);
 					TodDrawString(g, aAchievement, aPosX + 48, aPosY + 48, Sexy::FONT_CONTINUUMBOLD14, Color(255, 0, 0), DS_ALIGN_CENTER);
 				}
 				else if (mApp->IsSurvivalEndless(aDef.mChallengeMode))
 				{
-					SexyString aAchievement = TodReplaceNumberString(__S("[LONGEST_STREAK]"), __S("{STREAK}"), aRecord);
+					SexyString aAchievement = TodReplaceNumberString(_S("[LONGEST_STREAK]"), _S("{STREAK}"), aRecord);
 					Rect aRect(aPosX, aPosY + 15, 96, 200);
 					TodDrawStringWrapped(g, aAchievement, aRect, Sexy::FONT_CONTINUUMBOLD14OUTLINE, Color::White, DS_ALIGN_CENTER);
 					TodDrawStringWrapped(g, aAchievement, aRect, Sexy::FONT_CONTINUUMBOLD14, Color(255, 0, 0), DS_ALIGN_CENTER);
