@@ -1430,7 +1430,7 @@ void CreditScreen::UpdateMovie()
 void CreditScreen::TurnOffTongues(Reanimation* theReanim, int aParentTrack)
 {
     if (theReanim->mDefinition == 0)
-        return nullptr; 
+        return; 
     for (int aTrackIndex = 0; aTrackIndex < theReanim->mDefinition->mTracks.count; aTrackIndex++)
     {
         ReanimatorTrackInstance* aTrackInstance = &theReanim->mTrackInstances[aTrackIndex];
