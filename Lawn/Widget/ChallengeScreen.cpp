@@ -376,8 +376,7 @@ int ChallengeScreen::AccomplishmentsNeeded(int theChallengeIndex)
 	return mCheatEnableChallenges ? 0 : aTrophiesNeeded;
 }
 
-//0x42E920
-void ChallengeScreen::DrawButton(Graphics* g, int theChallengeIndex)
+//0x42E920void ChallengeScreen::DrawButton(Graphics* g, int theChallengeIndex)
 {
 	ButtonWidget* aChallengeButton = mChallengeButtons[theChallengeIndex];
 	if (aChallengeButton->mVisible)
@@ -450,25 +449,10 @@ void ChallengeScreen::DrawButton(Graphics* g, int theChallengeIndex)
 			{
 				// 先尝试在名称字符串的后半段取空格以将字符串分隔为两行，若后半段中无空格则在整个字符串中寻找空格
 				int aHalfPos = (mPageIndex == CHALLENGE_PAGE_SURVIVAL && !aChallengeButton->mDisabled) ? 7 : (aNameLen / 2 - 1);
-				const SexyChar* aSpacedChar = __S(aName.c_str() + aHalfPos, __S(' '));
-				while(aSpacedChar[0]!=' ')
-				{
-					aHalfPos++;
-					aSpacedChar = __S(aName.c_str() + aHalfPos, __S(' '));
-					if(aSpacedChar[0]=='\0')
-					{
-						aHalfPos--;
-						aSpacedChar = __S(aName.c_str() + aHalfPos, __S(' '));
-						break;
-					}
-				}
-				aHalfPos--;
-				aSpacedChar = __S(aName.c_str() + aHalfPos, __S(' '));
-
-				
+				const SexyChar* aSpacedChar = sexystrchr(aName.c_str() + aHalfPos, __S(' '));
 				if (aSpacedChar == nullptr)
 				{
-					aSpacedChar = __S(aName.c_str(), __S(' '));
+					aSpacedChar = sexystrchr(aName.c_str(), __S(' '));
 				}
 
 				// 分别计算取得两行文本的长度
@@ -479,23 +463,13 @@ void ChallengeScreen::DrawButton(Graphics* g, int theChallengeIndex)
 					aLine1Len = aSpacedChar - aName.c_str();
 					aLine2Len = aNameLen - aLine1Len - 1;
 				}
-				
+
 				// 分别绘制两行文本字符串
-				auto topStr=aName.substr(0, aLine1Len+1);
-				auto botStr=aName.substr(aLine1Len + 1, aLine2Len);
-				if(botStr.empty())
+				TodDrawString(g, aName.substr(0, aLine1Len), aPosX + 52, aPosY + 88, Sexy::FONT_BRIANNETOD12, aTextColor, DS_ALIGN_CENTER);
+				if (aLine2Len > 0)
 				{
-					TodDrawString(g, aName, aPosX + 52, aPosY + 96, Sexy::FONT_BRIANNETOD12, aTextColor, DS_ALIGN_CENTER);
+					TodDrawString(g, aName.substr(aLine1Len + 1, aLine2Len), aPosX + 52, aPosY + 102, Sexy::FONT_BRIANNETOD12, aTextColor, DS_ALIGN_CENTER);
 				}
-				else
-				{
-					TodDrawString(g, topStr, aPosX + 52, aPosY + 88, Sexy::FONT_BRIANNETOD12, aTextColor, DS_ALIGN_CENTER);
-					if (aLine2Len > 0)
-					{
-						TodDrawString(g, botStr, aPosX + 52, aPosY + 102, Sexy::FONT_BRIANNETOD12, aTextColor, DS_ALIGN_CENTER);
-					}
-				}
-			
 			}
 
 			// ============================================================================================
