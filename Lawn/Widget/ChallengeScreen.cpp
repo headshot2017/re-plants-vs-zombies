@@ -438,7 +438,7 @@ void ChallengeScreen::DrawButton(Graphics* g, int theChallengeIndex)
 			SexyString aName = TodStringTranslate(aDef.mChallengeName);
 			if (aChallengeButton->mDisabled || (theChallengeIndex == mUnlockChallengeIndex && mUnlockState == UNLOCK_SHAKING))
 			{
-				aName = _S("?");
+				aName = __S("?");
 			}
 
 			int aNameLen = aName.size();
@@ -522,13 +522,13 @@ void ChallengeScreen::DrawButton(Graphics* g, int theChallengeIndex)
 				}
 				else if (mApp->IsEndlessScaryPotter(aDef.mChallengeMode) || mApp->IsEndlessIZombie(aDef.mChallengeMode))
 				{
-					SexyString aAchievement = mApp->Pluralize(aRecord, _S("[ONE_FLAG]"), _S("[COUNT_FLAGS]"));
+					SexyString aAchievement = mApp->Pluralize(aRecord, __S("[ONE_FLAG]"), __S("[COUNT_FLAGS]"));
 					TodDrawString(g, aAchievement, aPosX + 48, aPosY + 48, Sexy::FONT_CONTINUUMBOLD14OUTLINE, Color::White, DS_ALIGN_CENTER);
 					TodDrawString(g, aAchievement, aPosX + 48, aPosY + 48, Sexy::FONT_CONTINUUMBOLD14, Color(255, 0, 0), DS_ALIGN_CENTER);
 				}
 				else if (mApp->IsSurvivalEndless(aDef.mChallengeMode))
 				{
-					SexyString aAchievement = TodReplaceNumberString(_S("[LONGEST_STREAK]"), _S("{STREAK}"), aRecord);
+					SexyString aAchievement = TodReplaceNumberString(__S("[LONGEST_STREAK]"), __S("{STREAK}"), aRecord);
 					Rect aRect(aPosX, aPosY + 15, 96, 200);
 					TodDrawStringWrapped(g, aAchievement, aRect, Sexy::FONT_CONTINUUMBOLD14OUTLINE, Color::White, DS_ALIGN_CENTER);
 					TodDrawStringWrapped(g, aAchievement, aRect, Sexy::FONT_CONTINUUMBOLD14, Color(255, 0, 0), DS_ALIGN_CENTER);
