@@ -376,8 +376,7 @@ int ChallengeScreen::AccomplishmentsNeeded(int theChallengeIndex)
 	return mCheatEnableChallenges ? 0 : aTrophiesNeeded;
 }
 
-//0x42E920
-void ChallengeScreen::DrawButton(Graphics* g, int theChallengeIndex)
+//0x42E920void ChallengeScreen::DrawButton(Graphics* g, int theChallengeIndex)
 {
 	ButtonWidget* aChallengeButton = mChallengeButtons[theChallengeIndex];
 	if (aChallengeButton->mVisible)

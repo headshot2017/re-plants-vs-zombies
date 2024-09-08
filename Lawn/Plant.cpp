@@ -2723,12 +2723,6 @@ void Plant::UpdateReanimColor()
             aBodyReanim->mExtraAdditiveColor = Color(255, 255, 255, 92);
         }
     }
-    else if (mBeghouledFlashCountdown > 0)
-    {
-        int anAlpha = TodAnimateCurve(50, 0, mBeghouledFlashCountdown % 50, 0, 128, TodCurves::CURVE_BOUNCE);
-        aBodyReanim->mExtraAdditiveColor = Color(255, 255, 255, anAlpha);
-        aBodyReanim->mEnableExtraAdditiveDraw = true;
-    }
     else if (mEatenFlashCountdown > 0)
     {
         int aGrayness = ClampInt(mEatenFlashCountdown * 3, 0, mImitaterType == SeedType::SEED_IMITATER ? 128 : 255);
@@ -2742,7 +2736,7 @@ void Plant::UpdateReanimColor()
 
     if (mBeghouledFlashCountdown > 0)
     {
-        int anAlpha = TodAnimateCurve(50, 0, mBeghouledFlashCountdown % 50, 0, 128, TodCurves::CURVE_BOUNCE);
+        const int anAlpha = TodAnimateCurve(50, 0, mBeghouledFlashCountdown % 50, 1, 128, TodCurves::CURVE_BOUNCE);
         aBodyReanim->mExtraOverlayColor = Color(255, 255, 255, anAlpha);
         aBodyReanim->mEnableExtraOverlayDraw = true;
     }
@@ -4665,7 +4659,7 @@ void Plant::Fire(Zombie* theTargetZombie, int theRow, PlantWeapon thePlantWeapon
     {
         int aOffsetX, aOffsetY;
         GetPeaHeadOffset(aOffsetX, aOffsetY);
-        aOriginX = mX + aOffsetX + 27;
+        aOriginX = mX - aOffsetX + 27;
         aOriginY = mY + aOffsetY - 33;
     }
     else if (mSeedType == SeedType::SEED_GATLINGPEA)

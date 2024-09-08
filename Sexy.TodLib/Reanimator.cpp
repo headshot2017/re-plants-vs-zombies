@@ -381,6 +381,7 @@ void Reanimation::ReanimationInitialize(float theX, float theY, ReanimatorDefini
 	mAnimRate = theDefinition->mFPS;
 	mLastFrameTime = -1.0f;
 
+	TOD_ASSERT(mDefinition != 0);
 	if (theDefinition->mTracks.count != 0)
 	{
 		mFrameCount = mDefinition->mTracks.tracks[0].mTransforms.count;

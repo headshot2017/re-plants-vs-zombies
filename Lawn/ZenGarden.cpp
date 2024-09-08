@@ -1464,7 +1464,7 @@ void ZenGarden::UpdateStinkyMotionTrail(GridItem* theStinky, bool theStinkyHighO
         return;
     }
 
-    if (theStinky->mMotionTrailCount == NUM_MOTION_TRAIL_FRAMES)
+    while (theStinky->mMotionTrailCount >= NUM_MOTION_TRAIL_FRAMES)
     {
         theStinky->mMotionTrailCount--;
     }

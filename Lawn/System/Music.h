@@ -109,7 +109,7 @@ public:
 	/*inline*/ void				MakeSureMusicIsPlaying(MusicTune theMusicTune);
 	/*inline*/ void				FadeOut(int theFadeOutDuration);
 	void						SetupMusicFileForTune(MusicFile theMusicFile, MusicTune theMusicTune);
-	unsigned long				GetMusicOrder(MusicFile theMusicFile);
+	unsigned long				GetMusicOrder(const MusicFile theMusicFile);
 	void						MusicCreditScreenInit();
 	int							GetNumLoadingTasks();
 };
