@@ -28,6 +28,7 @@ list(REMOVE_ITEM SOURCES
 
 set(NO_GLEW OFF)
 set(LOW_MEMORY OFF)
+set(DOWNSCALE_COUNT 1)
 if(NINTENDO_SWITCH)
 	set(NO_GLEW ON)
 	set(VORBIS_LIBS vorbisfile vorbis)
@@ -42,6 +43,7 @@ if(NINTENDO_SWITCH)
 elseif(NINTENDO_3DS)
 	set(NO_GLEW ON)
 	set(LOW_MEMORY ON)
+	set(DOWNSCALE_COUNT 2)
 	ctr_add_shader_library(colored ${CMAKE_CURRENT_SOURCE_DIR}/SexyAppFramework/platform/3ds/graphics/colored.v.pica)
 	ctr_add_shader_library(textured ${CMAKE_CURRENT_SOURCE_DIR}/SexyAppFramework/platform/3ds/graphics/textured.v.pica)
 	dkp_add_embedded_binary_library(shaders colored textured)
@@ -97,6 +99,7 @@ target_compile_definitions(re-plants-vs-zombies PRIVATE _DEBUG)
 if (LOW_MEMORY)
 	target_compile_definitions(re-plants-vs-zombies PRIVATE LOW_MEMORY)
 endif()
+target_compile_definitions(re-plants-vs-zombies PRIVATE IMG_DOWNSCALE=${DOWNSCALE_COUNT})
 
 target_link_libraries(re-plants-vs-zombies jpeg png z SDL2_mixer_ext_Static openmpt mpg123 ${VORBIS_LIBS} ogg ${SDL2_LIBRARIES} ${GLEW_LIBRARIES})
 

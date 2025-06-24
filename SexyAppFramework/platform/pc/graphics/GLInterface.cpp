@@ -793,14 +793,14 @@ void TextureData::Blt(float theX, float theY, const Rect& theSrcRect, const Colo
 			aHeight = srcBottom-srcY;
 			GLuint& aTexture = GetTexture(srcX, srcY, aWidth, aHeight, u1, v1, u2, v2);
 
-			float x = dstX - 0.5f;
-			float y = dstY - 0.5f;
+			float x = dstX*IMG_DOWNSCALE - 0.5f;
+			float y = dstY*IMG_DOWNSCALE - 0.5f;
 
 			GLVertex aVertex[4] = {
-				{ {x},        {y},         {0},{aColor},{u1},{v1} },
-				{ {x},        {y+aHeight}, {0},{aColor},{u1},{v2} },
-				{ {x+aWidth}, {y},         {0},{aColor},{u2},{v1} },
-				{ {x+aWidth}, {y+aHeight}, {0},{aColor},{u2},{v2} }
+				{ {x},                        {y},                       {0},{aColor},{u1},{v1} },
+				{ {x},                        {y+aHeight*IMG_DOWNSCALE}, {0},{aColor},{u1},{v2} },
+				{ {x+aWidth*IMG_DOWNSCALE},   {y},                       {0},{aColor},{u2},{v1} },
+				{ {x+aWidth*IMG_DOWNSCALE},   {y+aHeight*IMG_DOWNSCALE}, {0},{aColor},{u2},{v2} }
 			};
 
 			glBindTexture(GL_TEXTURE_2D, aTexture);
@@ -985,10 +985,12 @@ void TextureData::BltTransformed(const SexyMatrix3 &theTrans, const Rect& theSrc
 			aHeight = srcBottom-srcY;
 			GLuint& aTexture = GetTexture(srcX, srcY, aWidth, aHeight, u1, v1, u2, v2);
 
-			float x = dstX; // - 0.5f;
-			float y = dstY; // - 0.5f;
+			float x = dstX*IMG_DOWNSCALE; // - 0.5f;
+			float y = dstY*IMG_DOWNSCALE; // - 0.5f;
+			float w = aWidth*IMG_DOWNSCALE;
+			float h = aHeight*IMG_DOWNSCALE;
 
-			SexyVector2 p[4] = { SexyVector2(x, y), SexyVector2(x,y+aHeight), SexyVector2(x+aWidth, y) , SexyVector2(x+aWidth, y+aHeight) };
+			SexyVector2 p[4] = { SexyVector2(x, y), SexyVector2(x,y+h), SexyVector2(x+w, y) , SexyVector2(x+w, y+h) };
 			SexyVector2 tp[4];
 
 			int i;

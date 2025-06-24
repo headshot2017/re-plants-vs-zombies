@@ -1258,6 +1258,39 @@ int ImageLib::gAlphaComposeColor = 0xFFFFFF;
 bool ImageLib::gAutoLoadAlpha = true;
 bool ImageLib::gIgnoreJPEG2000Alpha = true;
 
+static unsigned char Sample(int w, int h, const unsigned char *pData, int u, int v, int Offset, int ScaleW, int ScaleH, int Bpp)
+{
+	int Value = 0;
+	for(int x = 0; x < ScaleW; x++)
+		for(int y = 0; y < ScaleH; y++)
+			Value += pData[((v+y)*w+(u+x))*Bpp+Offset];
+	return Value/(ScaleW*ScaleH);
+}
+
+static unsigned char *Rescale(int Width, int Height, int NewWidth, int NewHeight, const unsigned char *pData)
+{
+	unsigned char *pTmpData;
+	int ScaleW = Width/NewWidth;
+	int ScaleH = Height/NewHeight;
+
+	int Bpp = 4;
+
+	pTmpData = new unsigned char[NewWidth*NewHeight*Bpp];
+
+	int c = 0;
+	for(int y = 0; y < NewHeight; y++)
+		for(int x = 0; x < NewWidth; x++, c++)
+		{
+			pTmpData[c*Bpp] = Sample(Width, Height, pData, x*ScaleW, y*ScaleH, 0, ScaleW, ScaleH, Bpp);
+			pTmpData[c*Bpp+1] = Sample(Width, Height, pData, x*ScaleW, y*ScaleH, 1, ScaleW, ScaleH, Bpp);
+			pTmpData[c*Bpp+2] = Sample(Width, Height, pData, x*ScaleW, y*ScaleH, 2, ScaleW, ScaleH, Bpp);
+			if(Bpp == 4)
+				pTmpData[c*Bpp+3] = Sample(Width, Height, pData, x*ScaleW, y*ScaleH, 3, ScaleW, ScaleH, Bpp);
+		}
+
+	return pTmpData;
+}
+
 Image* ImageLib::GetImage(const std::string& theFilename, bool lookForAlphaImage)
 {
 	if (!gAutoLoadAlpha)
@@ -1298,6 +1331,20 @@ Image* ImageLib::GetImage(const std::string& theFilename, bool lookForAlphaImage
 		unreachable(); // There are no JPEG2000 files in the project
 		//anImage = GetJPEG2000Image(aFilename + ".jp2");
 
+
+	if (anImage)
+	{
+		int aNewWidth = anImage->mWidth/IMG_DOWNSCALE;
+		int aNewHeight = anImage->mHeight/IMG_DOWNSCALE;
+		if (aNewWidth > 0 && aNewHeight > 0)
+		{
+			unsigned char* aNewData = Rescale(anImage->mWidth, anImage->mHeight, aNewWidth, aNewHeight, (unsigned char*)anImage->mBits);
+			delete[] anImage->mBits;
+			anImage->mBits = (uint32_t*)aNewData;
+			anImage->mWidth = aNewWidth;
+			anImage->mHeight = aNewHeight;
+		}
+	}
 
 	// Check for alpha images
 	Image* anAlphaImage = NULL;
