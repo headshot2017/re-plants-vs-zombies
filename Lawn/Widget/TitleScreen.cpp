@@ -109,7 +109,7 @@ void TitleScreen::Draw(Graphics* g)
 		}
 		g->SetColorizeImages(true);
 		g->SetColor(Color(255, 255, 255, anAlpha));
-		g->DrawImage(IMAGE_POPCAP_LOGO, (mWidth - IMAGE_POPCAP_LOGO->mWidth*IMG_DOWNSCALE) / (IMG_DOWNSCALE*2), (mHeight - IMAGE_POPCAP_LOGO->mHeight*IMG_DOWNSCALE) / (IMG_DOWNSCALE*2));
+		g->DrawImage(IMAGE_POPCAP_LOGO, (mWidth - IMAGE_POPCAP_LOGO->mWidth) / 2, (mHeight - IMAGE_POPCAP_LOGO->mHeight) / 2);
 		g->SetColorizeImages(false);
 
 		return;
@@ -126,14 +126,14 @@ void TitleScreen::Draw(Graphics* g)
 		{
 			anAlpha = TodAnimateCurve(mTitleStateDuration, mTitleStateDuration - 35, mTitleStateCounter, 0, 255, TodCurves::CURVE_LINEAR);
 			g->SetColor(Color(255, 255, 255, 255 - anAlpha));
-			g->DrawImage(IMAGE_POPCAP_LOGO, (mWidth - IMAGE_POPCAP_LOGO->mWidth*IMG_DOWNSCALE) / (IMG_DOWNSCALE*2), (mHeight - IMAGE_POPCAP_LOGO->mHeight*IMG_DOWNSCALE) / (IMG_DOWNSCALE*2));
+			g->DrawImage(IMAGE_POPCAP_LOGO, (mWidth - IMAGE_POPCAP_LOGO->mWidth) / 2, (mHeight - IMAGE_POPCAP_LOGO->mHeight) / 2);
 		}
 		else
 		{
 			anAlpha = TodAnimateCurve(35, 0, mTitleStateCounter, 255, 0, TodCurves::CURVE_LINEAR);
 		}
 		g->SetColor(Color(255, 255, 255, anAlpha));
-		g->DrawImage(IMAGE_PARTNER_LOGO, (mWidth - IMAGE_PARTNER_LOGO->mWidth*IMG_DOWNSCALE) / (IMG_DOWNSCALE*2), (mHeight - IMAGE_PARTNER_LOGO->mHeight*IMG_DOWNSCALE) / (IMG_DOWNSCALE*2));
+		g->DrawImage(IMAGE_PARTNER_LOGO, (mWidth - IMAGE_PARTNER_LOGO->mWidth) / 2, (mHeight - IMAGE_PARTNER_LOGO->mHeight) / 2);
 		g->SetColorizeImages(false);
 
 		return;
@@ -161,17 +161,17 @@ void TitleScreen::Draw(Graphics* g)
 	{
 		aLogoY = TodAnimateCurve(60, 50, mTitleStateCounter, 10, 15, CURVE_BOUNCE);
 	}
-	g->DrawImage(IMAGE_PVZ_LOGO, mWidth / (IMG_DOWNSCALE*2) - IMAGE_PVZ_LOGO->mWidth * IMG_DOWNSCALE / (IMG_DOWNSCALE*2), aLogoY);
+	g->DrawImage(IMAGE_PVZ_LOGO, mWidth / 2 - IMAGE_PVZ_LOGO->mWidth / 2, aLogoY);
 
 	int aGrassX = mStartButton->mX;
 	int aGrassY = mStartButton->mY - 17;
 
 	//printf("%d %d\n", aGrassX, aGrassY);
-	g->DrawImage(IMAGE_LOADBAR_DIRT, aGrassX, aGrassY/IMG_DOWNSCALE + 18);
+	g->DrawImage(IMAGE_LOADBAR_DIRT, aGrassX, aGrassY + 18);
 
 	if (mCurBarWidth >= mTotalBarWidth)
 	{
-		g->DrawImage(IMAGE_LOADBAR_GRASS, aGrassX, aGrassY/IMG_DOWNSCALE);
+		g->DrawImage(IMAGE_LOADBAR_GRASS, aGrassX, aGrassY);
 
 		if (mLoadingThreadComplete)
 		{
@@ -291,7 +291,7 @@ void TitleScreen::Update()
 
 		mStartButton->mLabel = TodStringTranslate(__S("[LOADING]"));
 		mStartButton->SetFont(FONT_BRIANNETOD16);
-		mStartButton->Resize((mWidth - IMAGE_LOADBAR_DIRT->mWidth*IMG_DOWNSCALE) / (IMG_DOWNSCALE*2), 650, mTotalBarWidth, 50);
+		mStartButton->Resize((mWidth - IMAGE_LOADBAR_DIRT->mWidth) / 2, 650, mTotalBarWidth, 50);
 		mStartButton->mVisible = true;
 
 		float aEstimatedTotalLoadTime;
