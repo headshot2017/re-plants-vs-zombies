@@ -8,12 +8,16 @@ Fork of Patoke's PVZ GOTY decompilation with the following objectives:
   * This project uses a fork of SDL Mixer X that adds compatibility with the MO3 format by using libopenmpt. This fork is located under SexyAppFramework/sound/SDL-Mixer-X
 - [x] main.pak support
 - [x] Optimize memory usage for console ports (Partial)
-* Port the game to some videogame consoles:
+* Port the game to these platforms:
 
-| Console         | Data path                    | Notes                                                                                                                                      |
+| Console         | Data path                    | Status                                                                                                                                     |
 |-----------------|------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| Windows (SDL2)  | Same as executable           | Works                                                                                                                                      |
+| Linux (SDL2)    | Same as executable           | Works. Small issue on first start-up where the game is stretched fullscreen, making it difficult to click the buttons                      |
+| Haiku (SDL2)    | Same as executable           | Partially works: no music                                                                                                                  |
 | Nintendo Switch | sdmc:/switch/PlantsvsZombies | Works on yuzu (after compiling all definitions). Ryujinx crashes on boot. Real hardware works but has problems with textures after a while |
-| Nintendo 3DS    | sdmc:/3ds/PlantsvsZombies    | In development, might not have enough memory for Old 3DS, might barely work on New 3DS (Crashes during title screen loading)               |
+| Nintendo 3DS    | sdmc:/3ds/PlantsvsZombies    | In development, might not have enough memory for Old 3DS, might barely work on New 3DS                                                     |
+| Nintendo Wii U  |                              | No work started yet, but planned                                                                                                           |
 
 To play the game, you need the game data from PvZ GOTY. Copy "main.pak" and the "properties" folder to the path where the re-plants-vs-zombies executable is (or one of the above data paths for console ports).
 
