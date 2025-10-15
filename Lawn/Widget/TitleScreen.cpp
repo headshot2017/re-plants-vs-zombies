@@ -166,7 +166,7 @@ void TitleScreen::Draw(Graphics* g)
 	int aGrassX = mStartButton->mX;
 	int aGrassY = mStartButton->mY - 17;
 
-	printf("%d %d\n", aGrassX, aGrassY);
+	//printf("%d %d\n", aGrassX, aGrassY);
 	g->DrawImage(IMAGE_LOADBAR_DIRT, aGrassX, aGrassY/IMG_DOWNSCALE + 18);
 
 	if (mCurBarWidth >= mTotalBarWidth)
