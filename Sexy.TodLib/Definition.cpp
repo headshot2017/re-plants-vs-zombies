@@ -785,8 +785,9 @@ bool DefinitionReadStringField(XMLParser* theXmlParser, char** theValue)
     }
     else
     {
-        *theValue = (char*)DefinitionAlloc(aStringValue.size());
-        strcpy(*theValue, aStringValue.c_str());
+        // copy the null terminator too
+        *theValue = (char*)DefinitionAlloc(aStringValue.size()+1);
+        strncpy(*theValue, aStringValue.c_str(), aStringValue.size()+1);
     }
     return true;
 }
