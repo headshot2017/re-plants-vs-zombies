@@ -25,7 +25,7 @@ static int gMaxTextureWidth;
 static int gMaxTextureHeight;
 static int gSupportedPixelFormats;
 static bool gTextureSizeMustBePow2;
-static const int MAX_TEXTURE_SIZE = 1024;
+static int MAX_TEXTURE_SIZE;
 static bool gLinearFilter = false;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -506,11 +506,13 @@ static void GetBestTextureDimensions(int &theWidth, int &theHeight, bool isEdge,
 		return;
 	}
 
-	static int aGoodTextureSize[MAX_TEXTURE_SIZE];
+	static int* aGoodTextureSize;
 	static bool haveInited = false;
 	if (!haveInited)
 	{
 		haveInited = true;
+		aGoodTextureSize = new int[MAX_TEXTURE_SIZE];
+
 		int i;
 		int aPow2 = 1;
 		for (i=0; i<MAX_TEXTURE_SIZE; i++)
@@ -1412,6 +1414,7 @@ int GLInterface::Init(bool IsWindowed)
 
 	int aMaxSize;
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &aMaxSize);
+	MAX_TEXTURE_SIZE = aMaxSize;
 
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);

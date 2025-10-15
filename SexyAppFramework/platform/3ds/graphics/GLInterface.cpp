@@ -27,7 +27,7 @@ static int gMaxTextureWidth;
 static int gMaxTextureHeight;
 static int gSupportedPixelFormats;
 static bool gTextureSizeMustBePow2;
-static const int MAX_TEXTURE_SIZE = 512;
+static const int MAX_TEXTURE_SIZE = 1024;
 static bool gLinearFilter = false;
 
 ///////////////////////////////////////////////////////////////////////////////
