@@ -1,10 +1,10 @@
 #include "fcaseopen.h"
 
 #include <unistd.h> // fix "implicit declaration of function chdir"
+#include <string.h>
 
 #if !defined(_WIN32)
 #include <stdlib.h>
-#include <string.h>
 
 #include <dirent.h>
 #include <errno.h>
