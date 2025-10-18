@@ -14,7 +14,7 @@ Fork of Patoke's PVZ GOTY decompilation with the following objectives:
 | Windows (SDL2)  | Same as executable           | Works                                                                                                                                      |
 | Linux (SDL2)    | Same as executable           | Works. Small issue on first start-up where the game is stretched fullscreen, making it difficult to click the buttons                      |
 | Haiku (SDL2)    | Same as executable           | Partially works: no music                                                                                                                  |
-| Nintendo Switch | sdmc:/switch/PlantsvsZombies | Works on yuzu (after compiling all definitions). Ryujinx crashes on boot. Real hardware works but has problems with textures after a while |
+| Nintendo Switch | sdmc:/switch/PlantsvsZombies | Works on real hardware and Citron. Kenji-NX crashes on boot.                                                                               |
 | Nintendo 3DS    | sdmc:/3ds/PlantsvsZombies    | In development, might not have enough memory for Old 3DS, might barely work on New 3DS                                                     |
 | Nintendo Wii U  |                              | No work started yet, but planned                                                                                                           |
 
