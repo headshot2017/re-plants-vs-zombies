@@ -59,4 +59,7 @@ void SexyAppBase::MakeWindow()
 
 	mWidgetManager->mImage = mGLInterface->GetScreenImage();
 	mWidgetManager->MarkAllDirty();
+
+	mGLInterface->UpdateViewport();
+	mWidgetManager->Resize(mScreenBounds, mGLInterface->mPresentationRect);
 }
