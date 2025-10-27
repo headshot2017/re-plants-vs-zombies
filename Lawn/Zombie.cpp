@@ -1,5 +1,6 @@
 #include "Plant.h"
 #include "Board.h"
+#include "../ConstEnums.h"
 #include "Zombie.h"
 #include "Cutscene.h"
 #include "GridItem.h"
@@ -9419,6 +9420,9 @@ void Zombie::DrawShadow(Graphics* g)
     GetDrawPos(aDrawPos);
     if (mApp->mGameScene == GameScenes::SCENE_ZOMBIES_WON && !SetupDrawZombieWon(g))
         return;
+
+	// @Patoke, We don't want to draw shadows in Zombiquarium because it looks really dumb.
+	if (mApp->mGameMode == GAMEMODE_CHALLENGE_ZOMBIQUARIUM) return;
 
     int aShadowType = 0;
     float aShadowOffsetX = aDrawPos.mImageOffsetX;

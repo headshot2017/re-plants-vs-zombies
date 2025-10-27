@@ -45,7 +45,7 @@ SeedChooserScreen::SeedChooserScreen()
 	mStartButton->mDownImage = nullptr;
 	mStartButton->mDisabledImage = Sexy::IMAGE_SEEDCHOOSER_BUTTON_DISABLED;
 	mStartButton->mOverOverlayImage = Sexy::IMAGE_SEEDCHOOSER_BUTTON_GLOW;
-	mStartButton->SetFont(Sexy::FONT_DWARVENTODCRAFT15);
+	mStartButton->SetFont(Sexy::FONT_DWARVENTODCRAFT18YELLOW);
 	mStartButton->Resize(154, 545, 156, 42);
 	mStartButton->mTextOffsetY = -1;
 	EnableStartButton(false);

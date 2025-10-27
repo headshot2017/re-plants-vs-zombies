@@ -476,7 +476,7 @@ void GridItem::ClosePortal()
     Reanimation* aPortalReanim = mApp->ReanimationTryToGet(mGridItemReanimID);
     if (aPortalReanim)
     {
-        aPortalReanim->PlayReanim("anim_disappear", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 12.0f);
+        aPortalReanim->PlayReanim("anim_dissapear", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 12.0f);
     }
 
     TodParticleSystem* aPortalParticle = mApp->ParticleTryToGet(mGridItemParticleID);

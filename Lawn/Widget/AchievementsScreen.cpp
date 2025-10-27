@@ -29,7 +29,7 @@ AchievementItem gAchievementList[MAX_ACHIEVEMENTS] = {
 	{ "Explodonator", "Take out 10 full-sized zombies with a single Cherry Bomb." },
 	{ "Morticulturalist", "Collect all 49 plants (including plants from Crazy Dave's shop)." },
 	{ "Don't Pea in the Pool", "Complete a daytime pool level without using pea shooters of any kind." },
-	{ "Roll Some Heads", "Complete a daytime pool level without using pea shooters of any kind." },
+	{ "Roll Some Heads", "Bowl over 5 zombies with the same wall-nut." },
 	{ "Grounded", "Defeat a normal roof level without using any catapult plants." },
 	{ "Zombologist", "Discover the Yeti zombie." },
 	{ "Penny Pincher", "Pick up 30 coins in a row on a single level without letting any disappear." },
@@ -231,7 +231,7 @@ void ReportAchievement::GiveAchievement(LawnApp* theApp, int theAchievement, boo
 void ReportAchievement::AchievementInitForPlayer(LawnApp* theApp) {
 	if (!theApp || !theApp->mPlayerInfo)
 		return;
-
+	// @windowslover1234, for whatever reason, these three checks cause crashes on Windows, but not Linux.
 	if (theApp->HasFinishedAdventure()) {
 		GiveAchievement(theApp, AchievementId::HomeSecurity, true);
 	}

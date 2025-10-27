@@ -2725,7 +2725,7 @@ void Plant::UpdateReanimColor()
     }
     else if (mBeghouledFlashCountdown > 0)
     {
-        int anAlpha = TodAnimateCurve(50, 0, mBeghouledFlashCountdown % 50, 0, 128, TodCurves::CURVE_BOUNCE);
+        int anAlpha = TodAnimateCurve(50, 0, mBeghouledFlashCountdown % 50, 1, 128, TodCurves::CURVE_BOUNCE);
         aBodyReanim->mExtraAdditiveColor = Color(255, 255, 255, anAlpha);
         aBodyReanim->mEnableExtraAdditiveDraw = true;
     }
@@ -2742,7 +2742,7 @@ void Plant::UpdateReanimColor()
 
     if (mBeghouledFlashCountdown > 0)
     {
-        int anAlpha = TodAnimateCurve(50, 0, mBeghouledFlashCountdown % 50, 0, 128, TodCurves::CURVE_BOUNCE);
+        int anAlpha = TodAnimateCurve(50, 0, mBeghouledFlashCountdown % 50, 1, 128, TodCurves::CURVE_BOUNCE);
         aBodyReanim->mExtraOverlayColor = Color(255, 255, 255, anAlpha);
         aBodyReanim->mEnableExtraOverlayDraw = true;
     }
