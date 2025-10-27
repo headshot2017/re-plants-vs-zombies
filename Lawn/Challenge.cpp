@@ -564,8 +564,8 @@ int Challenge::BeghouledTwistMoveCausesMatch(int theGridX, int theGridY, Beghoul
 	SeedType aSeed4 = theBoardState->mSeedType[theGridX + 1][theGridY + 1];
 
 	theBoardState->mSeedType[theGridX + 1][theGridY] = aSeed1;
-	theBoardState->mSeedType[theGridX][theGridY + 1] = aSeed2;
-	theBoardState->mSeedType[theGridX + 1][theGridY + 1] = aSeed3;
+	theBoardState->mSeedType[theGridX + 1][theGridY + 1] = aSeed2;
+	theBoardState->mSeedType[theGridX][theGridY + 1] = aSeed3;
 	theBoardState->mSeedType[theGridX][theGridY] = aSeed4;
 
 	int aHasMatch = BeghouledBoardHasMatch(theBoardState);
@@ -574,7 +574,7 @@ int Challenge::BeghouledTwistMoveCausesMatch(int theGridX, int theGridY, Beghoul
 	theBoardState->mSeedType[theGridX + 1][theGridY] = aSeed2;
 	theBoardState->mSeedType[theGridX][theGridY + 1] = aSeed3;
 	theBoardState->mSeedType[theGridX + 1][theGridY + 1] = aSeed4;
-
+	
 	return aHasMatch;
 }
 
@@ -676,7 +676,7 @@ void Challenge::BeghouledDragUpdate(int x, int y)
 		int aGridXFrom = mBoard->PixelToGridX(mBeghouledMouseDownX, mBeghouledMouseDownY);
 		int aGridYFrom = mBoard->PixelToGridY(mBeghouledMouseDownX, mBeghouledMouseDownY);
 		int aGridXTo, aGridYTo;
-		if (aDeltaX > aDeltaY)
+		if (abs(aDeltaX) > abs(aDeltaY))
 		{
 			aGridXTo = aGridXFrom + (aDeltaX > 0 ? 1 : -1);
 			aGridYTo = aGridYFrom;
@@ -1320,10 +1320,14 @@ int Challenge::MouseDown(int x, int y, int theClickCount, HitResult* theHitResul
 		return true;
 	}
 
-	if (mApp->mGameMode == GAMEMODE_CHALLENGE_ZOMBIQUARIUM && theClickCount <= 0)
-	{
-		mApp->PlaySample(Sexy::SOUND_TAPGLASS);
-		return true;
+	if (mApp->mGameMode == GAMEMODE_CHALLENGE_ZOMBIQUARIUM){
+		if (theClickCount > 0) {
+			ZombiquariumMouseDown(x,y);
+			return false;
+		} else {
+			mApp->PlaySample(Sexy::SOUND_TAPGLASS);
+			return true;
+		}
 	}
 
 	if (mApp->IsScaryPotterLevel() && theHitResult->mObjectType == OBJECT_TYPE_SCARY_POT)
@@ -1430,8 +1434,8 @@ void Challenge::BeghouledFlashPlant(int theFlashX, int theFlashY, int theFromX, 
 	}
 
 	Plant* aFlashPlant = mBoard->GetTopPlantAt(theFlashX, theFlashY, PlantPriority::TOPPLANT_ONLY_NORMAL_POSITION);
-	if (aFlashPlant && aFlashPlant->mEatenFlashCountdown <= 300) 
-		aFlashPlant->mEatenFlashCountdown = 300;
+	if (aFlashPlant && aFlashPlant->mBeghouledFlashCountdown == 0) 
+		aFlashPlant->mBeghouledFlashCountdown = 300;
 }
 
 //0x422510
@@ -1443,9 +1447,9 @@ int Challenge::BeghouledTwistFlashMatch(BeghouledBoardState* theBoardState, int 
 	for (int i = 0; i < 4; i++)
 	{
 		Plant* aPlant = mBoard->GetTopPlantAt(theGridX + (i % 2), theGridY + (i / 2), PlantPriority::TOPPLANT_ANY);
-		if (aPlant && aPlant->mEatenFlashCountdown <= 300)
+		if (aPlant && aPlant->mBeghouledFlashCountdown == 0)
 		{
-			aPlant->mEatenFlashCountdown = 300;
+			aPlant->mBeghouledFlashCountdown = 300;
 		}
 	}
 	return true;
@@ -2131,6 +2135,7 @@ void Challenge::ZombieAtePlant(/*Zombie* theZombie,*/ Plant* thePlant)
 
 	if (mBoard->mSeedBank->mNumPackets == 4)
 	{
+		mBoard->mSeedBank->mNumPackets += 1;
 		mBoard->mSeedBank->mSeedPackets[4].SetPacketType(SEED_BEGHOULED_BUTTON_CRATER);
 		mBoard->DisplayAdvice(__S("[ADVICE_BEGHOULED_USE_CRATER_1]"), MESSAGE_STYLE_HINT_FAST, ADVICE_BEGHOULED_USE_CRATER_1);
 	}
@@ -2930,7 +2935,8 @@ int Challenge::UpdateZombieSpawning()
 	if (mApp->IsWhackAZombieLevel())
 	{
 		WhackAZombieSpawning();
-		return 0;
+		//@Minerscale: Need to return truthy value to prevent normal spawning
+		return true;
 	}
 	else return
 		mApp->IsFinalBossLevel() ||
@@ -3525,7 +3531,6 @@ int Challenge::CanTargetZombieWithPortals(Plant* thePlant, Zombie* theZombie)
 //0x427A60
 void Challenge::BeghouledPacketClicked(SeedPacket* theSeedPacket)
 {
-	/*
 	SeedType aPacketType = theSeedPacket->mPacketType;
 	int aPacketCost = mBoard->GetCurrentPlantCost(aPacketType, SEED_NONE);
 	if (!mBoard->CanTakeSunMoney(aPacketCost))
@@ -3562,70 +3567,6 @@ void Challenge::BeghouledPacketClicked(SeedPacket* theSeedPacket)
 		}
 		theSeedPacket->SetActivate(false);
 	}
-	*/
-
-	int aPacketCost = mBoard->GetCurrentPlantCost(theSeedPacket->mPacketType, SEED_NONE);
-	if (!mBoard->CanTakeSunMoney(aPacketCost))
-		return;
-
-	if (theSeedPacket->mPacketType == SEED_REPEATER && !mBoard->mChallenge->mBeghouledPurcasedUpgrade[(int)BeghouledUpgrade::BEGHOULED_UPGRADE_REPEATER])
-	{
-		mBoard->mChallenge->mBeghouledPurcasedUpgrade[(int)BeghouledUpgrade::BEGHOULED_UPGRADE_REPEATER] = true;
-
-		Plant* aPlant = nullptr;
-		while (mBoard->IteratePlants(aPlant))
-		{
-			if (aPlant->mSeedType == SEED_PEASHOOTER)
-			{
-				aPlant->Die();
-				mBoard->AddPlant(aPlant->mPlantCol, aPlant->mRow, SEED_REPEATER, SEED_NONE);
-			}
-		}
-	}
-	else if (theSeedPacket->mPacketType == SEED_FUMESHROOM && !mBoard->mChallenge->mBeghouledPurcasedUpgrade[(int)BeghouledUpgrade::BEGHOULED_UPGRADE_FUMESHROOM])
-	{
-		mBoard->mChallenge->mBeghouledPurcasedUpgrade[(int)BeghouledUpgrade::BEGHOULED_UPGRADE_FUMESHROOM] = true;
-
-		Plant* aPlant = nullptr;
-		while (mBoard->IteratePlants(aPlant))
-		{
-			if (aPlant->mSeedType == SEED_PUFFSHROOM)
-			{
-				aPlant->Die();
-				mBoard->AddPlant(aPlant->mPlantCol, aPlant->mRow, SEED_FUMESHROOM, SEED_NONE);
-			}
-		}
-	}
-	else if (theSeedPacket->mPacketType == SEED_TALLNUT && !mBoard->mChallenge->mBeghouledPurcasedUpgrade[(int)BeghouledUpgrade::BEGHOULED_UPGRADE_TALLNUT])
-	{
-		mBoard->mChallenge->mBeghouledPurcasedUpgrade[(int)BeghouledUpgrade::BEGHOULED_UPGRADE_TALLNUT] = true;
-
-		Plant* aPlant = nullptr;
-		while (mBoard->IteratePlants(aPlant))
-		{
-			if (aPlant->mSeedType == SEED_WALLNUT)
-			{
-				aPlant->Die();
-				mBoard->AddPlant(aPlant->mPlantCol, aPlant->mRow, SEED_TALLNUT, SEED_NONE);
-			}
-		}
-	}
-	else if (theSeedPacket->mPacketType == SEED_BEGHOULED_BUTTON_SHUFFLE)
-	{
-		if (mChallengeState == STATECHALLENGE_BEGHOULED_FALLING || mChallengeState == STATECHALLENGE_BEGHOULED_MOVING)
-			return;
-
-		BeghouledShuffle();
-	}
-	else if (theSeedPacket->mPacketType == SEED_BEGHOULED_BUTTON_CRATER)
-	{
-		if (!BeghouledCanClearCrater() || mChallengeState == STATECHALLENGE_BEGHOULED_FALLING || mChallengeState == STATECHALLENGE_BEGHOULED_MOVING)
-			return;
-
-		BeghouledClearCrater(1);
-		BeghouledStartFalling(STATECHALLENGE_BEGHOULED_FALLING);
-	}
-
 	mBoard->TakeSunMoney(aPacketCost);
 }
 
@@ -3783,7 +3724,7 @@ void Challenge::ZombiquariumUpdate()
 	{
 		mBoard->TutorialArrowRemove();
 		mBoard->ClearAdvice(ADVICE_ZOMBIQUARIUM_CLICK_TROPHY);
-		mBoard->mTutorialState = TUTORIAL_OFF;
+		mBoard->mTutorialState = TUTORIAL_ZOMBIQUARIUM_BOUGHT_SNORKEL;
 	}
 
 	GridItem* aGridItem = nullptr;

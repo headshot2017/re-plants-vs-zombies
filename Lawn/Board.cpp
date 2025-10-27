@@ -1587,6 +1587,10 @@ void Board::InitLevel()
 		mSeedBank->mSeedPackets[1].SetPacketType(SeedType::SEED_GRAVEBUSTER);
 		mSeedBank->mSeedPackets[2].SetPacketType(mApp->IsAdventureMode() ? SeedType::SEED_CHERRYBOMB : SeedType::SEED_ICESHROOM);
 	}
+	else if (aGameMode == GameMode::GAMEMODE_CHALLENGE_ZOMBIQUARIUM) {
+		mSeedBank->mSeedPackets[0].SetPacketType(SeedType::SEED_ZOMBIQUARIUM_SNORKLE);
+		mSeedBank->mSeedPackets[1].SetPacketType(SeedType::SEED_ZOMBIQUARIUM_TROPHY);
+	}
 	else if (!ChooseSeedsOnCurrentLevel() && !HasConveyorBeltSeedBank())
 	{
 		mSeedBank->mNumPackets = GetNumSeedsInBank();
@@ -3584,7 +3588,7 @@ void Board::UpdateToolTip()
 	}
 	else if (aUseSeedType == SeedType::SEED_ZOMBIQUARIUM_SNORKLE)
 	{
-		mToolTip->SetLabel(__S("[ZOMBIQUARIUM_SNORKLE_TOOLTIP]"));
+		mToolTip->SetLabel(__S("[ZOMBIQUARIUM_SNORKEL_TOOLTIP]"));
 	}
 	else if (aUseSeedType == SeedType::SEED_ZOMBIQUARIUM_TROPHY)
 	{
@@ -7462,7 +7466,11 @@ void Board::DrawUIBottom(Graphics* g)
 		g->DrawImageCel(Sexy::IMAGE_WAVECENTER, 160, 40, aWaveTime);
 		g->DrawImageCel(Sexy::IMAGE_WAVECENTER, 320, 40, aWaveTime);
 		g->DrawImageCel(Sexy::IMAGE_WAVECENTER, 480, 40, aWaveTime);
-		TodDrawImageCelScaled(g, Sexy::IMAGE_WAVESIDE, 800, 40, 0, aWaveTime, -1.0f, 1.0f);
+		//TodDrawImageCelScaled(g, Sexy::IMAGE_WAVESIDE, 800, 40, 0, aWaveTime, -1.0f, 1.0f);
+		TodDrawImageCelScaledF(
+			g, Sexy::IMAGE_WAVESIDE, 800, 40, aWaveTime % Sexy::IMAGE_WAVESIDE->mNumCols, 
+			aWaveTime / Sexy::IMAGE_WAVESIDE->mNumCols, -1.0f, 1.0f
+		);	
 		g->SetDrawMode(Graphics::DRAWMODE_NORMAL);
 	}
 

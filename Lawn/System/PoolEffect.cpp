@@ -8,9 +8,12 @@
 #include "graphics/GLInterface.h"
 //#include "graphics/D3DInterface.h"
 
+//effect documentation by @windowslover1234
+
 //0x469A60
 void PoolEffect::PoolEffectInitialize()
 {
+	//load pool caustics into memory
     TodHesitationBracket aHesitation("PoolEffectInitialize");
 
     mApp = gLawnApp;
@@ -21,7 +24,7 @@ void PoolEffect::PoolEffectInitialize()
     mCausticImage->mBits = new uint32_t[CAUSTIC_IMAGE_WIDTH * CAUSTIC_IMAGE_HEIGHT + 1];
     mCausticImage->mHasTrans = true;
     mCausticImage->mHasAlpha = true;
-    memset(mCausticImage->mBits, 0xFF, CAUSTIC_IMAGE_WIDTH * CAUSTIC_IMAGE_HEIGHT * 4);
+    memset(mCausticImage->mBits, 0xFF, CAUSTIC_IMAGE_WIDTH * CAUSTIC_IMAGE_HEIGHT * 4); //4
     mCausticImage->mBits[CAUSTIC_IMAGE_WIDTH * CAUSTIC_IMAGE_HEIGHT] = MEMORYCHECK_ID;
 
     mCausticGrayscaleImage = new unsigned char[256 * 256];
@@ -39,6 +42,7 @@ void PoolEffect::PoolEffectInitialize()
 
 void PoolEffect::PoolEffectDispose()
 {
+	//unload pool caustics from memory
     delete mCausticImage;
     delete[] mCausticGrayscaleImage;
 }
@@ -80,8 +84,8 @@ void PoolEffect::UpdateWaterEffect()
             int timeU = x << 17;
             int timePool0 = mPoolCounter << 16;
             int timePool1 = ((mPoolCounter & 65535) + 1) << 16;
-            int a1 = (unsigned char)BilinearLookupFixedPoint(timeU - timePool1 / 6, timeV1 + timePool0 / 8);
-            int a0 = (unsigned char)BilinearLookupFixedPoint(timeU + timePool0 / 10, timeV0);
+            int a1 = (unsigned char)BilinearLookupFixedPoint(timeU - timePool1 / 6, timeV1 + timePool0 / 8); //scroll speed
+            int a0 = (unsigned char)BilinearLookupFixedPoint(timeU + timePool0 / 10, timeV0); //scroll speed
             unsigned char a = (unsigned char)((a0 + a1) / 2);
 
             unsigned char alpha;
@@ -98,7 +102,7 @@ void PoolEffect::UpdateWaterEffect()
                 alpha = 0;
             }
 
-            *pix = (*pix & 0x00FFFFFF) + (((int)alpha / 3) << 24);
+            *pix = (*pix & 0x00FFFFFF) + (((int)alpha / 3) << 24); //alpha of caustic effect
             idx++;
         }
     }
@@ -111,6 +115,7 @@ void PoolEffect::PoolEffectDraw(Sexy::Graphics* g, bool theIsNight)
 {
     if (!mApp->Is3DAccelerated())
     {
+		//skip if using software rendering, never true in this port
         if (theIsNight)
         {
             g->DrawImage(IMAGE_POOL_NIGHT, 34, 278);
@@ -121,27 +126,28 @@ void PoolEffect::PoolEffectDraw(Sexy::Graphics* g, bool theIsNight)
         }
         return;
     }
-
+    //pool background
     float aGridSquareX = IMAGE_POOL->GetWidth() / 15.0f;
     float aGridSquareY = IMAGE_POOL->GetHeight() / 5.0f;
     float aOffsetArray[3][16][6][2] = {{{{ 0 }}}};
     for (int x = 0; x <= 15; x++)
     {
-        for (int y = 0; y <= 5; y++)
+        for (int y = 0; y <= 5; y++) //handles the caustic effect
         {
-            aOffsetArray[2][x][y][0] = x / 15.0f;
-            aOffsetArray[2][x][y][1] = y / 5.0f;
+			//scales the effect, multiplying by 10 seems to mostly fix it, original at right
+            aOffsetArray[2][x][y][0] = x / 150.0f; //15
+            aOffsetArray[2][x][y][1] = y / 50.0f; //5
             if (x != 0 && x != 15 && y != 0 && y != 5)
             {
-                float aPoolPhase = mPoolCounter * 2 * PI;
+                float aPoolPhase = mPoolCounter * 1 * PI; //speed, * 2 is default
                 float aWaveTime1 = aPoolPhase / 800.0;
                 float aWaveTime2 = aPoolPhase / 150.0;
                 float aWaveTime3 = aPoolPhase / 900.0;
                 float aWaveTime4 = aPoolPhase / 800.0;
                 float aWaveTime5 = aPoolPhase / 110.0;
-                float xPhase = x * 3.0f * 2 * PI / 15.0f;
-                float yPhase = y * 3.0f * 2 * PI / 5.0f;
-
+                float xPhase = x * 3.0f * 2 * PI / 15.0f; //15.0f
+                float yPhase = y * 3.0f * 2 * PI / 5.0f; //more speed options, 5.0f
+                //verticies for rendering, dividing by 1 gives interesting results
                 aOffsetArray[0][x][y][0] = sin(yPhase + aWaveTime2) * 0.002f + sin(yPhase + aWaveTime1) * 0.005f;
                 aOffsetArray[0][x][y][1] = sin(xPhase + aWaveTime5) * 0.01f + sin(xPhase + aWaveTime3) * 0.015f + sin(xPhase + aWaveTime4) * 0.005f;
                 aOffsetArray[1][x][y][0] = sin(yPhase * 0.2f + aWaveTime2) * 0.015f + sin(yPhase * 0.2f + aWaveTime1) * 0.012f;
@@ -151,6 +157,7 @@ void PoolEffect::PoolEffectDraw(Sexy::Graphics* g, bool theIsNight)
             }
             else
             {
+				//skip animation
                 aOffsetArray[0][x][y][0] = 0.0f;
                 aOffsetArray[0][x][y][1] = 0.0f;
                 aOffsetArray[1][x][y][0] = 0.0f;
@@ -174,13 +181,13 @@ void PoolEffect::PoolEffectDraw(Sexy::Graphics* g, bool theIsNight)
                 {
                     int aIndexX = x + aIndexOffsetX[aVertIndex];
                     int aIndexY = y + aIndexOffsetY[aVertIndex];
-                    if (aLayer == 2)
+                    if (aLayer == 2) //caustic effect
                     {
-                        pVert->x = (704.0f / 15.0f) * aIndexX + 45.0f;
-                        pVert->y = 30.0f * aIndexY + 288.0f;
+                        pVert->x = (704.0f / 15.0f) * aIndexX + 45.0f; //x-offset
+                        pVert->y = 30.0f * aIndexY + 288.0f; //y-offset
                         pVert->u = aOffsetArray[2][aIndexX][aIndexY][0] + aIndexX / 15.0f;
                         pVert->v = aOffsetArray[2][aIndexX][aIndexY][1] + aIndexY / 5.0f;
-
+                        //use correct colors depending on the scene
                         if (!g->mClipRect.Contains(pVert->x, pVert->y))
                         {
                             pVert->color = 0x00FFFFFFUL;
@@ -200,6 +207,7 @@ void PoolEffect::PoolEffectDraw(Sexy::Graphics* g, bool theIsNight)
                     }
                     else
                     {
+						//update water outlines
                         pVert->color = 0xFFFFFFFFUL;
                         pVert->x = aIndexX * aGridSquareX + 35.0f;
                         pVert->y = aIndexY * aGridSquareY + 279.0f;
@@ -214,7 +222,7 @@ void PoolEffect::PoolEffectDraw(Sexy::Graphics* g, bool theIsNight)
             }
         }
     }
-
+    //draw correct shading type depending on area.
     if (theIsNight)
     {
         g->DrawTrianglesTex(IMAGE_POOL_BASE_NIGHT, aVertArray[0], 150);
@@ -225,11 +233,14 @@ void PoolEffect::PoolEffectDraw(Sexy::Graphics* g, bool theIsNight)
         g->DrawTrianglesTex(IMAGE_POOL_BASE, aVertArray[0], 150);
         g->DrawTrianglesTex(IMAGE_POOL_SHADING, aVertArray[1], 150);
     }
-
+    //update positions
     UpdateWaterEffect();
+    //send something to OpenGL
     GLInterface* anInterface = ((GLImage*)g->mDestImage)->mGLInterface;
     //anInterface->CheckDXError(anInterface->mD3DDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_ADDRESSU, D3DTEXTUREADDRESS::D3DTADDRESS_WRAP), "DrawPool");
     //anInterface->CheckDXError(anInterface->mD3DDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_ADDRESSV, D3DTEXTUREADDRESS::D3DTADDRESS_WRAP), "DrawPool");
+    
+    //Send caustic effect tris to OpenGL (tex, verts, tris)
     g->DrawTrianglesTex(mCausticImage, aVertArray[2], 150);
     //anInterface->CheckDXError(anInterface->mD3DDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_ADDRESSU, D3DTEXTUREADDRESS::D3DTADDRESS_CLAMP), "DrawPool");
     //anInterface->CheckDXError(anInterface->mD3DDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_ADDRESSV, D3DTEXTUREADDRESS::D3DTADDRESS_CLAMP), "DrawPool");
@@ -237,5 +248,5 @@ void PoolEffect::PoolEffectDraw(Sexy::Graphics* g, bool theIsNight)
 
 void PoolEffect::PoolEffectUpdate()
 {
-    ++mPoolCounter;
+    ++mPoolCounter; //wonder if this stops after 4.5 years.
 }

@@ -1372,6 +1372,7 @@ void CutScene::ShowShovel()
 		mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_BEGHOULED_TWIST ||
 		mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZEN_GARDEN || 
 		mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZOMBIQUARIUM || 
+		mApp->mGameMode == GameMode::GAMEMODE_TREE_OF_WISDOM ||
 		mApp->IsIZombieLevel())
 		return;
 

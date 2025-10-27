@@ -784,12 +784,12 @@ void TodDrawImageCelCenterScaledF(Graphics* g, Image* theImageStrip, float thePo
 //0x512880
 void TodDrawImageCelScaledF(Graphics* g, Image* theImageStrip, float thePosX, float thePosY, int theCelCol, int theCelRow, float theScaleX, float theScaleY)
 {
-	(void)theCelRow;
+	//(void)theCelRow;
 	TOD_ASSERT(theCelCol >= 0 && theCelCol < theImageStrip->mNumCols);
 
 	int aCelWidth = theImageStrip->GetCelWidth();
 	int aCelHeight = theImageStrip->GetCelHeight();
-	Rect aSrcRect(aCelWidth * theCelCol, 0, aCelWidth, aCelHeight);
+	Rect aSrcRect(aCelWidth * theCelCol, aCelHeight * theCelRow, aCelWidth, aCelHeight);
 	if (theScaleX == 1.0f && theScaleY == 1.0f)
 	{
 		g->DrawImageF(theImageStrip, thePosX, thePosY, aSrcRect);
