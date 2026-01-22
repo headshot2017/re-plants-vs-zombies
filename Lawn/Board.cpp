@@ -563,7 +563,9 @@ bool Board::IsFlagWave(int theWaveNumber)
 //0x4090F0
 void ZombiePickerInitForWave(ZombiePicker* theZombiePicker)
 {
-	memset(theZombiePicker, 0, sizeof(ZombiePicker));
+	theZombiePicker->mZombieCount = 0;
+	theZombiePicker->mZombiePoints = 0;
+	memset(theZombiePicker->mZombieTypeCount, 0, sizeof(theZombiePicker->mZombieTypeCount));
 }
 
 //0x409170
