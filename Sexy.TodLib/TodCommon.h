@@ -4,6 +4,7 @@
 #include <cfloat>
 #include "../Lawn/LawnCommon.h"
 #include "../SexyAppFramework/Common.h"
+#include "TodDebug.h"
 #include "misc/ResourceManager.h"
 
 struct TodAllocator;
@@ -44,7 +45,13 @@ public:
 	float		mSecondLastPicked;
 };
 
-/*inline*/ intptr_t		TodPickFromArray(const intptr_t* theArray, int theCount);
+// Modified to a portable inline function that supports 32/64 bit systems
+template <typename T>
+inline T TodPickFromArray(const T* theArray, int theCount)
+{
+	TOD_ASSERT(theCount > 0);
+	return theCount > 0 ? theArray[Sexy::Rand(theCount)] : T{};
+}
 intptr_t				TodPickFromWeightedArray(const TodWeightedArray* theArray, int theCount);
 TodWeightedArray*		TodPickArrayItemFromWeightedArray(const TodWeightedArray* theArray, int theCount);
 TodWeightedGridArray*	TodPickFromWeightedGridArray(const TodWeightedGridArray* theArray, int theCount);

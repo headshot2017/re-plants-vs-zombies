@@ -2444,7 +2444,7 @@ SeedType ZenGarden::PickRandomSeedType()
             aSeedCount++;
         }
     }
-    return (SeedType)TodPickFromArray((intptr_t*)aSeedList, aSeedCount);
+    return TodPickFromArray(aSeedList, aSeedCount);
 }
 
 //0x5223F0
