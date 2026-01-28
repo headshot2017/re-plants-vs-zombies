@@ -1607,7 +1607,7 @@ void CutScene::AdvanceCrazyDaveDialog(bool theJustSkipping)
 	// “这是你的智慧树，我会给你一些肥料让你开始的”
 	if (mApp->mCrazyDaveMessageIndex == 3200)
 	{
-		mApp->mPlayerInfo->mPurchases[29] = PURCHASE_COUNT_OFFSET + 5;
+		mApp->mPlayerInfo->mPurchases[STORE_ITEM_TREE_FOOD] = PURCHASE_COUNT_OFFSET + 5;
 		mBoard->mMenuButton->mBtnNoDraw = false;
 		mBoard->mStoreButton->mBtnNoDraw = false;
 	}
