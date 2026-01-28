@@ -457,7 +457,7 @@ void TodDrawImageCelScaled(Graphics* g, Image* theImageStrip, int thePosX, int t
 	int aCelHeight = theImageStrip->GetCelHeight();
 	Rect aSrcRect(aCelWidth * theCelCol, aCelHeight * theCelRow, aCelWidth, aCelHeight);
 	Rect aDestRect(thePosX, thePosY, FloatRoundToInt(aCelWidth * theScaleX), FloatRoundToInt(aCelHeight * theScaleY));
-	g->DrawImage(theImageStrip, aSrcRect, aDestRect);
+	g->DrawImage(theImageStrip, aDestRect, aSrcRect);
 }
 
 static const int POOL_SIZE = 4096;
