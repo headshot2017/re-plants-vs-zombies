@@ -975,7 +975,7 @@ SeedType Challenge::BeghouledPickSeed(int theGridX, int theGridY, BeghouledBoard
 	TOD_ASSERT(theBoardState->mSeedType[theGridX][theGridY] == SEED_NONE);
 	// SeedType* aSeedState = &theBoardState->mSeedType[theGridX][theGridY];
 	int aCount = 0;
-	intptr_t aPickArray[6];
+	SeedType aPickArray[6];
 	
 	for (int i = 0; i < 6; i++)
 	{
@@ -1014,7 +1014,7 @@ SeedType Challenge::BeghouledPickSeed(int theGridX, int theGridY, BeghouledBoard
 	}
 	
 	theBoardState->mSeedType[theGridX][theGridY] = SEED_NONE;
-	return (SeedType)TodPickFromArray(aPickArray, aCount);
+	return TodPickFromArray(aPickArray, aCount);
 }
 
 //0x4216E0

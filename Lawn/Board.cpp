@@ -4907,7 +4907,7 @@ void Board::PickSpecialGraveStone()
 
 	if (aPickCount > 0)
 	{
-		((GridItem*)TodPickFromArray((intptr_t*)aPicks, aPickCount))->mGridItemState = GridItemState::GRIDITEM_STATE_GRAVESTONE_SPECIAL;
+		TodPickFromArray(aPicks, aPickCount)->mGridItemState = GridItemState::GRIDITEM_STATE_GRAVESTONE_SPECIAL;
 	}
 }
 
